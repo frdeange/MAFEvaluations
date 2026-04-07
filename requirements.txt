@@ -1,0 +1,5 @@
+agent-framework==1.0.0
+agent-framework-lab[gaia,tau2]==1.0.0b251024
+azure-ai-evaluation==1.16.4
+pandas==2.3.3
+pyarrow==23.0.1
