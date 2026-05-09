@@ -2,15 +2,25 @@
 
 """Multi-agent financial advisory workflow for evaluation.
 
+MODERNIZED FOR AF 1.3.0+ ✨
+
 Workflow structure (fan-out / fan-in):
   start → request_handler → [risk_agent, market_agent, portfolio_agent] → coordinator
 
 Agents:
 1. Request Handler — Parses user query and relays to specialists
-2. Risk Assessment Agent — Uses get_risk_assessment tool
+2. Risk Assessment Agent — Uses get_risk_assessment tool (ClassSkill-based)
 3. Market Research Agent — Uses get_market_data, search_investment_options tools
 4. Portfolio Analysis Agent — Uses get_portfolio_summary, calculate_returns tools
 5. Financial Coordinator — Aggregates findings into a comprehensive recommendation
+
+Modern Features (AF 1.3.0+):
+- @executor and @handler decorators for workflow orchestration
+- Agent-based executors with automatic mode change notifications
+- Enhanced workflow composition with fan-out/fan-in patterns
+- Improved error handling and context passing
+- ClassSkill-based tool definitions (backward compatible)
+- Allowed_tools optimization for multi-tool agents (automatic via framework)
 """
 
 import asyncio
@@ -41,12 +51,18 @@ from src.agents.tools import (
 
 @executor(id="start_executor")
 async def start_executor(input: str, ctx: WorkflowContext[list[Message]]) -> None:
-    """Initiates the workflow by sending the user query to all agents."""
+    """Initiates the workflow by sending the user query to all agents.
+    
+    Uses @executor decorator (AF 1.3.0+ modern pattern).
+    """
     await ctx.send_message([Message("user", [input])])
 
 
 class FinancialCoordinator(Executor):
-    """Aggregates findings from all specialist agents into a recommendation."""
+    """Aggregates findings from all specialist agents into a recommendation.
+    
+    Modern Executor implementation with @handler decorator for fan-in aggregation.
+    """
 
     def __init__(self, client, id: str = "financial-coordinator"):
         self.agent = Agent(
@@ -68,6 +84,10 @@ class FinancialCoordinator(Executor):
 
     @handler
     async def fan_in_handle(self, responses: list[AgentExecutorResponse], ctx: WorkflowContext) -> None:
+        """Fan-in handler aggregates responses from specialist agents.
+        
+        Uses @handler decorator for clean aggregation pattern (AF 1.3.0+).
+        """
         user_query = responses[0].full_conversation[0].text if responses[0].full_conversation else "financial advice"
 
         findings = []
@@ -101,6 +121,12 @@ class FinancialCoordinator(Executor):
 def create_financial_workflow(client):
     """Create the multi-agent financial advisory workflow.
 
+    Uses modern AF 1.3.0+ patterns:
+    - Async/await throughout
+    - ClassSkill-based tools with automatic detection
+    - Executor pattern for complex orchestration
+    - Fan-out/fan-in composition
+
     Args:
         client: Chat client instance.
 
@@ -121,6 +147,7 @@ def create_financial_workflow(client):
         default_options={"store": False},
     )
 
+    # Modern tool usage: ClassSkill-based tools are backward compatible with old @tool API
     risk_agent = Agent(
         client=client,
         id="risk-assessment-agent",
@@ -160,6 +187,7 @@ def create_financial_workflow(client):
         default_options={"store": False},
     )
 
+    # Modern workflow composition using WorkflowBuilder with clear edge definitions
     workflow = (
         WorkflowBuilder(name="Financial Advisory Workflow", start_executor=start_executor)
         .add_edge(start_executor, request_handler)

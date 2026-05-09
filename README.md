@@ -1,8 +1,33 @@
 # MAF Evaluations
 
-Comprehensive evaluation suite built on **Microsoft Agent Framework (MAF) v1.0.0** for a **Financial Advisor** agent. Covers all MAF evaluation capabilities across 7 categories.
+Comprehensive evaluation suite built on **Microsoft Agent Framework (MAF) v1.3.0** ✨ **[MODERNIZED]** for a **Financial Advisor** agent. Covers all MAF evaluation capabilities across 7 categories.
 
-> **Tested and verified** on April 7, 2026 with `agent-framework==1.0.0`, `gpt-4.1`, and Azure AI Foundry.
+> **Upgraded and Verified** on May 9, 2026 with `agent-framework==1.3.0` and modern SDK patterns.
+
+---
+
+## 🎉 What's New (v1.3.0 Modernization)
+
+### **ClassSkill-Based Tools** 🛠️
+- Migrated from `@tool` decorators to modern `ClassSkill` architecture
+- Better organization with automatic method discovery
+- Backward compatible - existing code still works
+- Located in: [src/agents/tools.py](src/agents/tools.py)
+
+### **Memory Harness Provider** 💾
+- Enhanced self-reflection evaluations with state tracking
+- Iterative feedback with historical context
+- Located in: [evaluations/05_self_reflection/](evaluations/05_self_reflection/)
+
+### **Enhanced Security** 🔐
+- Information-flow control injection defense
+- Boundary enforcement for Financial Advisor instructions
+- Prevents jailbreak attempts at framework level
+
+### **Modern Workflow Orchestration** 🔄
+- `@executor` and `@handler` decorators for clean multi-agent patterns
+- Fan-out/fan-in composition for complex workflows
+- Located in: [evaluations/06_workflow_eval/](evaluations/06_workflow_eval/)
 
 ---
 

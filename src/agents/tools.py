@@ -7,6 +7,14 @@ from agent_framework import tool
 from pydantic import Field
 
 
+# ============================================================================
+# Modern Tools Definition (AF 1.3.0+)
+# ============================================================================
+# While ClassSkill is available in AF 1.3.0, we keep the decorator-based approach
+# for immediate compatibility. Tools are organized logically below.
+# Migration to full ClassSkill is possible in future versions.
+
+
 @tool(name="get_portfolio_summary", description="Get a summary of the client's investment portfolio.")
 def get_portfolio_summary(
     client_id: Annotated[str, Field(description="The unique client identifier.")],
@@ -206,3 +214,26 @@ def search_investment_options(
         "options_found": len(results),
         "options": results,
     })
+
+
+# ============================================================================
+# Tools Collection
+# ============================================================================
+ALL_TOOLS = [
+    get_portfolio_summary,
+    get_market_data,
+    calculate_returns,
+    get_risk_assessment,
+    search_investment_options,
+]
+
+__all__ = [
+    "get_portfolio_summary",
+    "get_market_data",
+    "calculate_returns",
+    "get_risk_assessment",
+    "search_investment_options",
+    "ALL_TOOLS",
+]
+
+

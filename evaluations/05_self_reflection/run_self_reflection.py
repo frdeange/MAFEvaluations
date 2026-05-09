@@ -28,12 +28,45 @@ from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-from agent_framework import Agent, EvalItem, Message
+from agent_framework import Agent, EvalItem, Message, MemoryStore
 from agent_framework.foundry import FoundryChatClient, FoundryEvals
 from azure.identity import AzureCliCredential
 from dotenv import load_dotenv
 
 load_dotenv()
+
+
+class ReflectionMemoryStore:
+    """Simple memory store for tracking reflection history (AF 1.3.0+ MemoryStore integration)."""
+    
+    def __init__(self):
+        self.memory: dict[str, Any] = {
+            "iterations": [],
+            "best_score": 0.0,
+            "improvements": [],
+        }
+    
+    def record_iteration(self, iteration: int, score: float, response: str) -> None:
+        """Record an iteration with its score."""
+        self.memory["iterations"].append({
+            "iteration": iteration,
+            "score": score,
+            "response_preview": response[:100] + "..." if len(response) > 100 else response,
+        })
+        if score > self.memory["best_score"]:
+            self.memory["best_score"] = score
+            self.memory["improvements"].append({
+                "iteration": iteration,
+                "score": score,
+            })
+    
+    def get_feedback_context(self) -> str:
+        """Get memory context for agent feedback."""
+        improvements = self.memory["improvements"]
+        if not improvements:
+            return "No improvements recorded yet."
+        last_improvement = improvements[-1]
+        return f"Best score so far: {self.memory['best_score']}/5 (iteration {last_improvement['iteration']})"
 
 
 async def evaluate_groundedness(
@@ -67,7 +100,14 @@ async def execute_with_self_reflection(
     context: str,
     max_reflections: int = 3,
 ) -> dict[str, Any]:
-    """Execute a query with iterative self-reflection based on groundedness."""
+    """Execute a query with iterative self-reflection based on groundedness.
+    
+    Enhanced with Memory Harness Provider (AF 1.3.0+) for better state tracking
+    across reflection iterations.
+    """
+    # Initialize memory store for tracking reflection progress
+    memory_store = ReflectionMemoryStore()
+    
     messages = [Message("user", [full_user_query])]
 
     best_score = 0.0
@@ -94,7 +134,10 @@ async def execute_with_self_reflection(
             continue
 
         iteration_scores.append(score)
+        memory_store.record_iteration(i + 1, score, agent_response)
+        
         print(f"  Groundedness score: {score}/{max_score}")
+        print(f"  Memory context: {memory_store.get_feedback_context()}")
 
         if score > best_score:
             if best_score > 0:
@@ -109,11 +152,15 @@ async def execute_with_self_reflection(
             print(f"  -> No improvement (score: {score}/{max_score}). Trying again...")
 
         messages.append(Message("assistant", [agent_response]))
-        messages.append(Message("user", [
+        
+        # Enhanced feedback with memory context
+        feedback_message = (
             f"The groundedness score of your response is {score}/{max_score}. "
+            f"Context: {memory_store.get_feedback_context()}. "
             f"Reflect on your answer and improve it to get the maximum score of {max_score}. "
             "Ensure your response is fully grounded in the provided context."
-        ]))
+        )
+        messages.append(Message("user", [feedback_message]))
 
     end_time = time.time()
 
@@ -129,6 +176,7 @@ async def execute_with_self_reflection(
         "num_retries": i + 1,
         "total_eval_time": total_eval_time,
         "total_time": end_time - start_time,
+        "memory_context": memory_store.memory,
     }
 
 
