@@ -1,32 +1,29 @@
 # MAF Evaluations
 
-Comprehensive evaluation suite built on **Microsoft Agent Framework (MAF) v1.3.0** ✨ **[MODERNIZED]** for a **Financial Advisor** agent. Covers all MAF evaluation capabilities across 7 categories.
+Comprehensive evaluation suite built on **Microsoft Agent Framework (MAF) v1.3.0** for a **Financial Advisor** agent. Covers all MAF evaluation capabilities across multiple categories.
 
-> **Upgraded and Verified** on May 9, 2026 with `agent-framework==1.3.0` and modern SDK patterns.
+> **Verified** with `agent-framework==1.3.0` (released April 2026) and modern SDK patterns.
+>
+> ⚠️ **All evaluation APIs are decorated `@experimental`** in MAF v1.3.0. They are functional but the public surface may evolve in future releases. Pin your dependencies in production.
 
 ---
 
-## 🎉 What's New (v1.3.0 Modernization)
+## 🎯 What this repo demonstrates
 
-### **ClassSkill-Based Tools** 🛠️
-- Migrated from `@tool` decorators to modern `ClassSkill` architecture
-- Better organization with automatic method discovery
-- Backward compatible - existing code still works
+This repository focuses **exclusively** on the evaluation capabilities of Microsoft Agent Framework. Everything else (agent orchestration, tool design, RAG, etc.) is intentionally minimalist — the Financial Advisor agent is just the test subject.
+
+### Tooling architecture
+- **`@tool` decorator-based functions** for the 5 mock financial tools (also compatible with the `ClassSkill` style)
 - Located in: [src/agents/tools.py](src/agents/tools.py)
 
-### **Memory Harness Provider** 💾
-- Enhanced self-reflection evaluations with state tracking
-- Iterative feedback with historical context
+### Self-Reflection (Reflexion pattern)
+- Agent re-runs after evaluator feedback until quality is good enough
+- Uses `FoundryEvals.GROUNDEDNESS` as the iteration signal
 - Located in: [evaluations/05_self_reflection/](evaluations/05_self_reflection/)
 
-### **Enhanced Security** 🔐
-- Information-flow control injection defense
-- Boundary enforcement for Financial Advisor instructions
-- Prevents jailbreak attempts at framework level
-
-### **Modern Workflow Orchestration** 🔄
+### Multi-agent Workflow Orchestration
 - `@executor` and `@handler` decorators for clean multi-agent patterns
-- Fan-out/fan-in composition for complex workflows
+- Fan-out/fan-in composition via `WorkflowBuilder`
 - Located in: [evaluations/06_workflow_eval/](evaluations/06_workflow_eval/)
 
 ---
@@ -306,7 +303,7 @@ queries=["Use the get_risk_assessment tool for moderate risk level"]
 ExperimentalWarning: [EVALS] ... is experimental
 ```
 
-This is expected. The evaluation APIs in MAF v1.0.0 are marked as `@experimental`. They are functional and stable.
+This is expected. The evaluation APIs in MAF v1.3.0 are marked as `@experimental`. They are functional and stable for daily use, but their public surface may evolve in future releases. Pin `agent-framework==1.3.0` (or whichever version you validated against) for reproducibility.
 
 ### Red teaming takes a long time
 
@@ -332,7 +329,7 @@ MAFEvaluations/
 |       +-- common.py                 # Chat client creation (Foundry/OpenAI)
 +-- evaluations/
     +-- 01_local_eval/                # LocalEvaluator, keyword_check, @evaluator
-    +-- 02_foundry_eval/              # FoundryEvals, evaluate_agent, evaluate_traces
+    +-- 02_foundry_eval/              # FoundryEvals, evaluate_agent
     +-- 03_mixed_eval/                # Local + Foundry combined
     +-- 04_red_teaming/               # RedTeam with AttackStrategy
     +-- 05_self_reflection/           # Reflexion pattern with groundedness
@@ -347,10 +344,10 @@ MAFEvaluations/
 | `evaluate_agent()` | `agent_framework` | Run agent + evaluate in one call |
 | `evaluate_workflow()` | `agent_framework` | Evaluate multi-agent workflows with per-agent breakdown |
 | `LocalEvaluator` | `agent_framework` | Fast API-free checks, ideal for CI/CD |
-| `@evaluator` | `agent_framework` | Decorator for custom evaluation functions |
+| `@evaluator` | `agent_framework` | Decorator for custom evaluation functions (sync or async) |
 | `keyword_check()`, `tool_called_check()` | `agent_framework` | Built-in check helpers |
 | `ExpectedToolCall` | `agent_framework` | Verify expected tool calls with arguments |
-| `FoundryEvals` | `agent_framework.foundry` | Azure AI Foundry cloud evaluators |
+| `FoundryEvals` | `agent_framework.foundry` | Azure AI Foundry cloud evaluators (19 built-in) |
 | `EvalItem`, `ConversationSplit` | `agent_framework` | Evaluation data types |
 | `AgentEvalConverter` | `agent_framework` | Conversion to evaluation format |
 | `WorkflowBuilder` | `agent_framework` | Multi-agent workflow construction |
