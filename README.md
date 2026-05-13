@@ -40,7 +40,6 @@ Comprehensive evaluation suite built on **Microsoft Agent Framework (MAF) v1.3.0
 
 ### Optional prerequisites
 
-- OpenAI API key (for TAU2 benchmark)
 - Hugging Face token (for GAIA benchmark)
 
 ---
@@ -167,21 +166,6 @@ python evaluations/02_foundry_eval/run_multiturn_eval.py
 
 ---
 
-### 02d — Foundry: Traces Eval (zero-code-change)
-
-```bash
-python evaluations/02_foundry_eval/run_traces_eval.py
-```
-
-**What it does**: Runs the agent with `store=True`, captures the `response_id` values, and then evaluates those stored responses without re-running the agent.
-
-**Runtime**: ~90 seconds
-**Expected result**: 2/2 passed with portal link
-
-**Use case**: Evaluate agents in production without modifying agent code.
-
----
-
 ### 03 — Mixed Eval (local + cloud in a single call)
 
 ```bash
@@ -288,25 +272,13 @@ Per-agent breakdown:
 
 ---
 
-### 07a — GAIA Benchmark (optional)
+### 07 — GAIA Benchmark (optional)
 
 ```bash
 python evaluations/07_benchmarks/run_gaia.py --level 1 --max-n 3
 ```
 
 **Requirements**: `HF_TOKEN` with access to the `gaia-benchmark/GAIA` dataset
-
----
-
-### 07b — TAU2 Benchmark (optional)
-
-```bash
-python evaluations/07_benchmarks/run_tau2.py --assistant gpt-4o --max-steps 50
-```
-
-**Requirements**: `OPENAI_API_KEY`, tau2-bench data cloned locally
-
-**Note**: The `agent-framework-lab[tau2]` module (v1.0.0b251024) has a compatibility issue with v1.0.0 of core. The script handles the error gracefully.
 
 ---
 
@@ -340,18 +312,6 @@ This is expected. The evaluation APIs in MAF v1.0.0 are marked as `@experimental
 
 This is normal. Each run generates ~72 attack attempts (6 strategies x 4 categories x 3 objectives) + scoring. Expect 10-15 minutes.
 
-### `evaluate_traces` fails with `missing model`
-
-Requires the `model=` parameter explicitly:
-```python
-results = await evaluate_traces(
-    response_ids=ids,
-    evaluators=[FoundryEvals.RELEVANCE],
-    client=client,
-    model=client.model,  # <- required
-)
-```
-
 ---
 
 ## Project structure
@@ -373,7 +333,7 @@ MAFEvaluations/
     +-- 04_red_teaming/               # RedTeam with AttackStrategy
     +-- 05_self_reflection/           # Reflexion pattern with groundedness
     +-- 06_workflow_eval/             # WorkflowBuilder + evaluate_workflow
-    +-- 07_benchmarks/                # GAIA and TAU2
+    +-- 07_benchmarks/                # GAIA benchmark
 ```
 
 ## MAF APIs used
@@ -387,13 +347,11 @@ MAFEvaluations/
 | `keyword_check()`, `tool_called_check()` | `agent_framework` | Built-in check helpers |
 | `ExpectedToolCall` | `agent_framework` | Verify expected tool calls with arguments |
 | `FoundryEvals` | `agent_framework.foundry` | Azure AI Foundry cloud evaluators |
-| `evaluate_traces()` | `agent_framework.foundry` | Evaluate past runs by response ID |
 | `EvalItem`, `ConversationSplit` | `agent_framework` | Evaluation data types |
 | `AgentEvalConverter` | `agent_framework` | Conversion to evaluation format |
 | `WorkflowBuilder` | `agent_framework` | Multi-agent workflow construction |
 | `RedTeam`, `AttackStrategy` | `azure.ai.evaluation` | Adversarial red teaming |
 | `GAIA` | `agent_framework.lab.gaia` | GAIA benchmark |
-| `TaskRunner` | `agent_framework.lab.tau2` | TAU2 benchmark |
 
 ## Available cloud evaluators (FoundryEvals)
 

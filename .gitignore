@@ -156,6 +156,14 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+venv-redteam-test/
+venv-*/
+
+# Red team scan artifacts
+.scan_*/
+
+# Internal narrative cheatsheet (do not sync)
+script.html5
 
 # Spyder project settings
 .spyderproject
