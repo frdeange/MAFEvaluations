@@ -334,6 +334,22 @@ Applied per-agent in the workflow via `evaluate_workflow`'s `sub_results`. Use t
 
 ---
 
+### 11 — Continuous Eval (`configure_otel_providers` + sampled `evaluate_agent`)
+
+```bash
+python evaluations/11_continuous_eval/run_continuous_eval.py
+```
+
+**What it does**: Demonstrates the building blocks for the "deploy → forget" anti-pattern:
+1. `configure_otel_providers()` enables the framework's auto-instrumentation. The demo attaches an `InMemorySpanExporter` so spans show up inline; in production you swap for OTLP → Application Insights / Jaeger / Grafana Tempo.
+2. The agent serves "production traffic" — every call generates spans (`invoke_agent`, `chat`, `execute_tool`, token usage attributes).
+3. A sample of that traffic is then run through `evaluate_agent` to score quality continuously.
+
+**Runtime**: ~30-60 seconds
+**Expected result**: ~12 spans captured, token usage rolled up, evaluator pass rate.
+
+---
+
 ## Troubleshooting
 
 ### 401/403 error on Foundry evaluations
@@ -393,6 +409,7 @@ MAFEvaluations/
     +-- 08_custom_llm_judge/          # Custom @evaluator + LLM judge
     +-- 09_similarity_eval/           # FoundryEvals.SIMILARITY + expected_output
     +-- 10_workflow_deep_eval/        # Per-agent agent-behaviour evaluators
+    +-- 11_continuous_eval/           # OpenTelemetry traces + sampled evaluation
 ```
 
 ## MAF APIs used
@@ -409,6 +426,7 @@ MAFEvaluations/
 | `EvalItem`, `ConversationSplit` | `agent_framework` | Evaluation data types |
 | `AgentEvalConverter` | `agent_framework` | Conversion to evaluation format |
 | `WorkflowBuilder` | `agent_framework` | Multi-agent workflow construction |
+| `configure_otel_providers` | `agent_framework.observability` | Wire OTel for continuous instrumentation |
 | `RedTeam`, `AttackStrategy` | `azure.ai.evaluation` | Adversarial red teaming |
 | `GAIA` | `agent_framework.lab.gaia` | GAIA benchmark |
 
