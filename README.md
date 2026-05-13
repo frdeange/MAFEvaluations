@@ -279,6 +279,22 @@ python evaluations/07_benchmarks/run_gaia.py --level 1 --max-n 3
 
 ---
 
+### 08 — Custom LLM-as-judge (`@evaluator` + chat client)
+
+```bash
+python evaluations/08_custom_llm_judge/run_llm_judge.py
+```
+
+**What it does**: Builds a custom asynchronous `@evaluator` that delegates the scoring decision to a separate LLM (the "judge"). Same pattern that powers the FoundryEvals quality scorers, but implemented locally so you can:
+- Run it offline (no Foundry account required for the eval itself).
+- Customize the judge prompt to your domain (rubric on a 1-5 scale).
+- Combine it inside a `LocalEvaluator` alongside cheap rule-based checks.
+
+**Runtime**: ~30-60 seconds (3 queries × 1 judge call each)
+**Expected result**: Judge returns 4-5/5 on Financial Advisor responses.
+
+---
+
 ## Troubleshooting
 
 ### 401/403 error on Foundry evaluations
@@ -335,6 +351,7 @@ MAFEvaluations/
     +-- 05_self_reflection/           # Reflexion pattern with groundedness
     +-- 06_workflow_eval/             # WorkflowBuilder + evaluate_workflow
     +-- 07_benchmarks/                # GAIA benchmark
+    +-- 08_custom_llm_judge/          # Custom @evaluator + LLM judge
 ```
 
 ## MAF APIs used
