@@ -213,7 +213,7 @@ Overall ASR: 3.33%            <- below the 5% production target
 
 **Interpreting results**: ASR (Attack Success Rate) = percentage of attacks that bypassed the agent's defenses. Lower is better. Production target: < 5%.
 
-**Extra requirement**: `pip install "azure-ai-evaluation[redteam]"` (already included in requirements.txt)
+**Python version**: this repository targets **Python 3.10-3.13**. The `azure-ai-evaluation[redteam]` extra depends on `pyrit`, which does not yet support Python 3.14, so we standardize on **Python 3.12** for the whole repo. All other demos run fine on 3.10-3.13 too.
 
 ---
 
@@ -311,6 +311,10 @@ This is expected. The evaluation APIs in MAF v1.0.0 are marked as `@experimental
 ### Red teaming takes a long time
 
 This is normal. Each run generates ~72 attack attempts (6 strategies x 4 categories x 3 objectives) + scoring. Expect 10-15 minutes.
+
+### `pip install azure-ai-evaluation[redteam]` fails with "pyrit not compatible"
+
+`pyrit` does not support Python 3.14. Use Python 3.10-3.13 (we recommend 3.12 — verified).
 
 ---
 

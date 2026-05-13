@@ -1,5 +1,5 @@
 agent-framework==1.3.0
 agent-framework-lab[gaia]==1.0.0b251024
-azure-ai-evaluation==1.16.7
+azure-ai-evaluation[redteam]==1.16.7
 pandas==2.3.3
 pyarrow==24.0.0

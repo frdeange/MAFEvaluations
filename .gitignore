@@ -163,7 +163,7 @@ venv-*/
 .scan_*/
 
 # Internal narrative cheatsheet (do not sync)
-script.html5
+script.html
 
 # Spyder project settings
 .spyderproject
