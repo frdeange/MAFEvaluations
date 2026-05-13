@@ -295,6 +295,24 @@ python evaluations/08_custom_llm_judge/run_llm_judge.py
 
 ---
 
+### 09 — Ground-truth Similarity (`expected_output` + `FoundryEvals.SIMILARITY`)
+
+```bash
+python evaluations/09_similarity_eval/run_similarity_eval.py
+```
+
+**What it does**: Demonstrates the regression-test pattern for agent quality: each test case carries an `expected_output` (the canonical answer for that query) and the `SIMILARITY` evaluator scores how close the live agent response is to it. Pair with `RELEVANCE` for a richer signal.
+
+**Use cases**:
+- Pin desired tone / disclaimer phrasing for a customer-facing agent.
+- Catch subtle drift after a model upgrade.
+- Validate paraphrasing of tool outputs (e.g. portfolio summary).
+
+**Runtime**: ~60-90 seconds
+**Expected result**: 3/3 items with similarity 4-5/5.
+
+---
+
 ## Troubleshooting
 
 ### 401/403 error on Foundry evaluations
@@ -352,6 +370,7 @@ MAFEvaluations/
     +-- 06_workflow_eval/             # WorkflowBuilder + evaluate_workflow
     +-- 07_benchmarks/                # GAIA benchmark
     +-- 08_custom_llm_judge/          # Custom @evaluator + LLM judge
+    +-- 09_similarity_eval/           # FoundryEvals.SIMILARITY + expected_output
 ```
 
 ## MAF APIs used
