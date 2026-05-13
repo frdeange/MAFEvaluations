@@ -350,6 +350,27 @@ python evaluations/11_continuous_eval/run_continuous_eval.py
 
 ---
 
+### 12 — Foundry Target Eval (`evaluate_foundry_target`)
+
+```bash
+python evaluations/12_foundry_target_eval/run_foundry_target_eval.py
+```
+
+**What it does**: CI/CD-friendly evaluation flavour — instead of running the agent client-side, you point Foundry at a registered target (an Azure AI Agent or a model deployment) and Foundry both invokes it and runs the evaluators on the captured outputs. Returns a portal URL with everything pre-rendered.
+
+**Use it when**:
+- You want to evaluate an agent that is already deployed in Foundry.
+- You want a release gate inside a CI/CD pipeline that does not embed the agent code.
+- You want the eval results auto-archived in the Foundry portal alongside the deployment.
+
+**Conditional execution**:
+- If `FOUNDRY_TARGET_AGENT_NAME` is set in `.env` → runs end-to-end against that registered agent.
+- Otherwise it runs in **documentation mode** — explains what to set and prints the equivalent code, doubling as living docs for the API.
+
+**Runtime**: ~60-180 seconds (when run end-to-end)
+
+---
+
 ## Troubleshooting
 
 ### 401/403 error on Foundry evaluations
@@ -410,6 +431,7 @@ MAFEvaluations/
     +-- 09_similarity_eval/           # FoundryEvals.SIMILARITY + expected_output
     +-- 10_workflow_deep_eval/        # Per-agent agent-behaviour evaluators
     +-- 11_continuous_eval/           # OpenTelemetry traces + sampled evaluation
+    +-- 12_foundry_target_eval/       # evaluate_foundry_target (CI/CD pattern)
 ```
 
 ## MAF APIs used
@@ -418,6 +440,7 @@ MAFEvaluations/
 |-----|---------|---------|
 | `evaluate_agent()` | `agent_framework` | Run agent + evaluate in one call |
 | `evaluate_workflow()` | `agent_framework` | Evaluate multi-agent workflows with per-agent breakdown |
+| `evaluate_foundry_target()` | `agent_framework.foundry` | CI/CD eval against a Foundry-registered target |
 | `LocalEvaluator` | `agent_framework` | Fast API-free checks, ideal for CI/CD |
 | `@evaluator` | `agent_framework` | Decorator for custom evaluation functions (sync or async) |
 | `keyword_check()`, `tool_called_check()` | `agent_framework` | Built-in check helpers |
