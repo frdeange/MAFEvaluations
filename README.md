@@ -24,7 +24,7 @@ This repository focuses **exclusively** on the evaluation capabilities of Micros
 ### Multi-agent Workflow Orchestration
 - `@executor` and `@handler` decorators for clean multi-agent patterns
 - Fan-out/fan-in composition via `WorkflowBuilder`
-- Located in: [evaluations/06_workflow_eval/](evaluations/06_workflow_eval/)
+- Located in: [evaluations/06_workflow_eval/](evaluations/06_workflow_eval/) and [evaluations/10_workflow_deep_eval/](evaluations/10_workflow_deep_eval/)
 
 ---
 
@@ -313,6 +313,27 @@ python evaluations/09_similarity_eval/run_similarity_eval.py
 
 ---
 
+### 10 — Workflow Deep Eval (4 agent-behaviour evaluators per agent)
+
+```bash
+python evaluations/10_workflow_deep_eval/run_workflow_deep_eval.py
+```
+
+**What it does**: Extends demo 06 with the agent-specific Foundry evaluators that go beyond surface metrics:
+- `INTENT_RESOLUTION` — did the agent understand what the user wanted?
+- `TASK_ADHERENCE` — did it stay on-task?
+- `TOOL_CALL_ACCURACY` — were the tool calls correct?
+- `RELEVANCE` — bonus surface metric.
+
+Applied per-agent in the workflow via `evaluate_workflow`'s `sub_results`. Use this to diagnose which specialist is the weakest link.
+
+> **Note**: `TASK_NAVIGATION_EFFICIENCY` is the obvious 5th evaluator, but in MAF v1.3.0 it requires `actions` / `expected_actions` data mapping that the SDK does not auto-derive yet — it is left out and documented inline in the demo.
+
+**Runtime**: ~3-5 minutes
+**Expected result**: per-agent breakdown showing which agent has weak intent resolution.
+
+---
+
 ## Troubleshooting
 
 ### 401/403 error on Foundry evaluations
@@ -371,6 +392,7 @@ MAFEvaluations/
     +-- 07_benchmarks/                # GAIA benchmark
     +-- 08_custom_llm_judge/          # Custom @evaluator + LLM judge
     +-- 09_similarity_eval/           # FoundryEvals.SIMILARITY + expected_output
+    +-- 10_workflow_deep_eval/        # Per-agent agent-behaviour evaluators
 ```
 
 ## MAF APIs used
